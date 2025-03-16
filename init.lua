@@ -103,7 +103,17 @@ vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 -- vim.opt.relativenumber = true
+nnoremap h <Up>
+nnoremap j <Left>
+nnoremap k <Down>
+nnoremap l <Right>
 
+vnoremap h <Up>
+vnoremap j <Left>
+vnoremap k <Down>
+vnoremap l <Right>
+
+set clipboard=unnamedplus
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
