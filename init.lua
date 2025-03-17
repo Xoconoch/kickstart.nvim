@@ -103,17 +103,21 @@ vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 -- vim.opt.relativenumber = true
-nnoremap h <Up>
-nnoremap j <Left>
-nnoremap k <Down>
-nnoremap l <Right>
+-- Key mappings for normal mode
+vim.api.nvim_set_keymap('n', 'h', '<Up>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'j', '<Left>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'k', '<Down>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'l', '<Right>', { noremap = true, silent = true })
 
-vnoremap h <Up>
-vnoremap j <Left>
-vnoremap k <Down>
-vnoremap l <Right>
+-- Key mappings for visual mode
+vim.api.nvim_set_keymap('v', 'h', '<Up>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('v', 'j', '<Left>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('v', 'k', '<Down>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('v', 'l', '<Right>', { noremap = true, silent = true })
 
-set clipboard=unnamedplus
+-- Set clipboard option
+vim.opt.clipboard = 'unnamedplus'
+
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
