@@ -104,16 +104,6 @@ vim.opt.number = true
 --  Experiment for yourself to see if you like it!
 -- vim.opt.relativenumber = true
 -- Key mappings for normal mode
-vim.api.nvim_set_keymap('n', 'h', '<Up>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'j', '<Left>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'k', '<Down>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', 'l', '<Right>', { noremap = true, silent = true })
-
--- Key mappings for visual mode
-vim.api.nvim_set_keymap('v', 'h', '<Up>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', 'j', '<Left>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', 'k', '<Down>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', 'l', '<Right>', { noremap = true, silent = true })
 
 -- Set clipboard option
 vim.opt.clipboard = 'unnamedplus'
@@ -994,6 +984,16 @@ require('lazy').setup({
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
+  {
+    'lervag/vimtex',
+    lazy = false, -- we don't want to lazy load VimTeX
+    -- tag = "v2.15", -- uncomment to pin to a specific release
+    init = function()
+      -- VimTeX configuration goes here, e.g.
+    vim.g.vimtex_view_method = 'zathura'
+    end,
+  },
+
 
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
   --
