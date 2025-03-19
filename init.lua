@@ -991,6 +991,21 @@ require('lazy').setup({
     init = function()
       -- VimTeX configuration goes here, e.g.
       vim.g.vimtex_view_method = 'zathura'
+      vim.g.vimtex_compiler_latexmk = {
+        build_dir = '',
+        callback = 1,
+        continuous = 1, -- Ensures continuous compilation
+        executable = 'latexmk',
+        hooks = {},
+        options = {
+          '-shell-escape',
+          '-verbose',
+          '-file-line-error',
+          '-synctex=1',
+          '-interaction=nonstopmode',
+          '-pdf',
+        },
+      }
     end,
   },
 
@@ -1008,6 +1023,20 @@ require('lazy').setup({
             add = { '[', ']' }, -- No spaces inside square brackets
           },
         },
+      }
+    end,
+  },
+
+  {
+    'windwp/nvim-autopairs',
+    event = 'InsertEnter', -- Load when entering insert mode
+    config = function()
+      require('nvim-autopairs').setup {
+        check_ts = true, -- Enable Treesitter integration
+        enable_afterquote = true,
+        enable_moveright = true,
+        map_bs = true, -- Allow backspace to delete the pair
+        fast_wrap = {}, -- Optional: Enable wrapping
       }
     end,
   },
