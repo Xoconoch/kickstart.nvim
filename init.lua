@@ -1004,8 +1004,15 @@ require('lazy').setup({
           '-synctex=1',
           '-interaction=nonstopmode',
           '-pdf',
+          '-bibtex', -- Ensure proper handling of citations (useful if bibtex is needed)
+          '-pdflatex=lualatex', -- Use lualatex or xelatex for APA 7 (change if needed)
         },
       }
+
+      vim.g.vimtex_view_method = 'zathura' -- PDF viewer (change if needed)
+      vim.g.vimtex_quickfix_mode = 0 -- Disable quickfix auto-popup
+      vim.g.vimtex_indent_enabled = 1 -- Enable smart indentation
+      vim.g.vimtex_format_enabled = 1 -- Autoformat LaTeX
     end,
   },
 
