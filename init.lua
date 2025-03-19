@@ -990,10 +990,27 @@ require('lazy').setup({
     -- tag = "v2.15", -- uncomment to pin to a specific release
     init = function()
       -- VimTeX configuration goes here, e.g.
-    vim.g.vimtex_view_method = 'zathura'
+      vim.g.vimtex_view_method = 'zathura'
     end,
   },
 
+  {
+    'kylechui/nvim-surround',
+    version = '*', -- Use the latest stable version
+    event = 'VeryLazy',
+    config = function()
+      require('nvim-surround').setup {
+        surrounds = {
+          ['{'] = {
+            add = { '{', '}' }, -- No spaces inside curly brackets
+          },
+          ['['] = {
+            add = { '[', ']' }, -- No spaces inside square brackets
+          },
+        },
+      }
+    end,
+  },
 
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
   --
