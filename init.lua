@@ -90,9 +90,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ';'
 
--- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
-
+vim.env.JAVA_OPTS = '-Djdk.xml.totalEntitySizeLimit=1000000'
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
@@ -696,13 +694,6 @@ require('lazy').setup({
         },
 
         texlab = {},
-        ltex = {
-          settings = {
-            ltex = {
-              language = 'es',
-            },
-          },
-        },
       }
 
       -- Ensure the servers and tools above are installed
