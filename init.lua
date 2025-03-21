@@ -666,7 +666,6 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         clangd = {},
-        gopls = {},
         pyright = {},
         rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -1058,6 +1057,45 @@ require('lazy').setup({
     end,
   },
 
+  {
+    'nvim-tree/nvim-tree.lua',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require('nvim-tree').setup {
+        view = {
+          side = 'right', -- Sidebar on the right
+          width = 30, -- Set width
+        },
+      }
+
+      -- Ensure NvimTree is always above toggleterm
+      vim.api.nvim_create_autocmd('TermOpen', {
+        pattern = 'term://*',
+        callback = function()
+          if require('nvim-tree.view').is_visible() then
+            vim.cmd 'NvimTreeClose | NvimTreeOpen' -- Restart NvimTree on top
+          end
+        end,
+      })
+
+      -- Keymap for toggling NvimTree with Ctrl+B
+      vim.keymap.set('n', '<C-b>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+    end,
+  },
+  {
+    'pocco81/auto-save.nvim',
+    config = function()
+      require('auto-save').setup {
+        enabled = true, -- Auto-start on launch
+        execution_message = { enabled = false }, -- Hide save messages
+        events = { 'InsertLeave', 'TextChanged' },
+        conditions = {
+          exists = true,
+          modifiable = true,
+        },
+      }
+    end,
+  },
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
   --
   --  Here are some example plugins that I've included in the Kickstart repository.
