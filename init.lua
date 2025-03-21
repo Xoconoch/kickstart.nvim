@@ -1048,6 +1048,15 @@ require('lazy').setup({
       }
     end,
   },
+  {
+    'akinsho/toggleterm.nvim',
+    config = function()
+      require('toggleterm').setup {
+        open_mapping = [[<c-t>]],
+        direction = 'horizontal', -- You can change this to "vertical" or "float"
+      }
+    end,
+  },
 
   -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
   --
