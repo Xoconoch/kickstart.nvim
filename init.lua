@@ -101,11 +101,6 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
---  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -765,7 +760,6 @@ require('lazy').setup({
     -- tag = "v2.15", -- uncomment to pin to a specific release
     init = function()
       -- VimTeX configuration goes here, e.g.
-      vim.g.vimtex_view_method = 'zathura'
       vim.g.vimtex_compiler_latexmk = {
         build_dir = '',
         callback = 1,
@@ -784,10 +778,12 @@ require('lazy').setup({
         },
       }
 
-      vim.g.vimtex_view_method = 'zathura' -- PDF viewer (change if needed)
       vim.g.vimtex_quickfix_mode = 0 -- Disable quickfix auto-popup
       vim.g.vimtex_indent_enabled = 1 -- Enable smart indentation
       vim.g.vimtex_format_enabled = 1 -- Autoformat LaTeX
+      vim.g.vimtex_view_automatic = 0
+      vim.g.vimtex_compiler_enabled = 1
+      vim.g.vimtex_compiler_method = 'latexmk'
     end,
   },
 
@@ -822,11 +818,48 @@ require('lazy').setup({
     'nvim-tree/nvim-tree.lua',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
+      local api = require 'nvim-tree.api'
+
+      local function on_attach(bufnr)
+        local opts = { noremap = true, silent = true, buffer = bufnr }
+
+        -- 'o' now takes the functionality previously bound to <CR>
+        vim.keymap.set('n', 'o', function()
+          local node = api.tree.get_node_under_cursor()
+          if node.nodes ~= nil then
+            -- If directory: change root to that directory
+            api.tree.change_root_to_node(node)
+          else
+            -- If file: open and replace the current buffer
+            api.node.open.edit()
+          end
+        end, opts)
+
+        -- <CR> now takes the functionality previously bound to 'o'
+        vim.keymap.set('n', '<CR>', function()
+          local node = api.tree.get_node_under_cursor()
+          if node.nodes ~= nil and not node.open then
+            -- If directory and not already expanded: expand it
+            api.node.open.edit()
+          end
+        end, opts)
+
+        -- Additional keybindings for splits remain the same
+        vim.keymap.set('n', '<C-v>', api.node.open.vertical, opts)
+        vim.keymap.set('n', '<C-h>', api.node.open.horizontal, opts)
+      end
+
       require('nvim-tree').setup {
         view = {
           side = 'right', -- Sidebar on the right
           width = 30, -- Set width
         },
+        actions = {
+          open_file = {
+            quit_on_open = true, -- Automatically close the tree when opening a file
+          },
+        },
+        on_attach = on_attach, -- Use our custom keybindings
       }
 
       -- Ensure NvimTree stays on top of toggleterm windows
@@ -954,6 +987,76 @@ require('lazy').setup({
       }
     end,
   },
+  {
+    'frabjous/knap', -- plugin repo
+    keys = {
+      {
+        '<F5>',
+        function()
+          require('knap').process_once()
+        end,
+        mode = { 'n', 'v', 'i' },
+        desc = 'Process document once',
+      },
+      {
+        '<F6>',
+        function()
+          require('knap').close_viewer()
+        end,
+        mode = { 'n', 'v', 'i' },
+        desc = 'Close viewer and reset settings',
+      },
+      {
+        '<F7>',
+        function()
+          require('knap').toggle_autopreviewing()
+        end,
+        mode = { 'n', 'v', 'i' },
+        desc = 'Toggle auto-preview',
+      },
+      {
+        '<F8>',
+        function()
+          require('knap').forward_jump()
+        end,
+        mode = { 'n', 'v', 'i' },
+        desc = 'Forward jump (SyncTeX)',
+      },
+    },
+    config = function()
+      -- Global settings for knap; adjust commands and options as desired.
+      local gknapsettings = {
+        texoutputext = 'pdf',
+        textopdf = 'pdflatex -synctex=1 -halt-on-error -interaction=batchmode %docroot%',
+        textopdfviewerlaunch = 'sioyek %outputfile%',
+        textopdfviewerrefresh = 'kill -HUP %pid%',
+        delay = 250,
+      }
+      vim.g.knap_settings = gknapsettings
+
+      -- Enable auto-preview by default
+      vim.g.knap_autopreview = 1
+
+      -- Toggle auto-previewing once on entering a TeX buffer, after a delay (1000ms)
+      vim.api.nvim_create_autocmd('BufEnter', {
+        pattern = '*.tex',
+        callback = function()
+          vim.defer_fn(function()
+            require('knap').toggle_autopreviewing()
+          end, 1000)
+        end,
+        once = true,
+      })
+
+      -- Close the preview when quitting Neovim (e.g., with :wq)
+      vim.api.nvim_create_autocmd('VimLeavePre', {
+        callback = function()
+          require('knap').close_viewer()
+        end,
+      })
+    end,
+  },
+
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
