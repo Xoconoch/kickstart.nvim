@@ -681,10 +681,10 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'midnight'
     end,
   },
-
+  { 'dasupradyumna/midnight.nvim', lazy = false, priority = 1000 },
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
@@ -823,46 +823,62 @@ require('lazy').setup({
       local function on_attach(bufnr)
         local opts = { noremap = true, silent = true, buffer = bufnr }
 
-        -- 'o' now takes the functionality previously bound to <CR>
+        -- "o": For directories, toggle expand/collapse; for files, open.
         vim.keymap.set('n', 'o', function()
           local node = api.tree.get_node_under_cursor()
-          if node.nodes ~= nil then
-            -- If directory: change root to that directory
-            api.tree.change_root_to_node(node)
+          if node.nodes then
+            if node.open then
+              -- Collapse: use parent_close() to collapse the current directory.
+              api.node.navigate.parent_close()
+            else
+              -- Expand the directory.
+              api.node.open.edit()
+            end
           else
-            -- If file: open and replace the current buffer
+            -- Open file.
             api.node.open.edit()
           end
         end, opts)
 
-        -- <CR> now takes the functionality previously bound to 'o'
-        vim.keymap.set('n', '<CR>', function()
+        -- "Ctrl+o": For directories only, set it as the root.
+        vim.keymap.set('n', '<C-o>', function()
           local node = api.tree.get_node_under_cursor()
-          if node.nodes ~= nil and not node.open then
-            -- If directory and not already expanded: expand it
-            api.node.open.edit()
+          if node.nodes then
+            api.tree.change_root_to_node(node)
           end
         end, opts)
 
-        -- Additional keybindings for splits remain the same
-        vim.keymap.set('n', '<C-v>', api.node.open.vertical, opts)
-        vim.keymap.set('n', '<C-h>', api.node.open.horizontal, opts)
+        -- "Ctrl+v": Open file in vertical split.
+        vim.keymap.set('n', '<C-v>', function()
+          local node = api.tree.get_node_under_cursor()
+          if not node.nodes then
+            api.node.open.vertical()
+          end
+        end, opts)
+
+        -- "Ctrl+h": Open file in horizontal split.
+        vim.keymap.set('n', '<C-h>', function()
+          local node = api.tree.get_node_under_cursor()
+          if not node.nodes then
+            api.node.open.horizontal()
+          end
+        end, opts)
       end
 
       require('nvim-tree').setup {
         view = {
-          side = 'right', -- Sidebar on the right
-          width = 30, -- Set width
+          side = 'right',
+          width = 30,
         },
         actions = {
           open_file = {
-            quit_on_open = true, -- Automatically close the tree when opening a file
+            quit_on_open = true,
           },
         },
-        on_attach = on_attach, -- Use our custom keybindings
+        on_attach = on_attach,
       }
 
-      -- Ensure NvimTree stays on top of toggleterm windows
+      -- Keep NvimTree on top of toggleterm windows.
       vim.api.nvim_create_autocmd('TermOpen', {
         pattern = 'term://*',
         callback = function()
@@ -872,7 +888,7 @@ require('lazy').setup({
         end,
       })
 
-      -- Keybinding for toggling the sidebar open/close with Ctrl+B
+      -- Toggle the sidebar with Ctrl+B.
       vim.keymap.set('n', '<C-b>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
     end,
   },
@@ -971,23 +987,6 @@ require('lazy').setup({
     'ryanoasis/vim-devicons',
   },
   {
-    'pocco81/auto-save.nvim',
-    config = function()
-      require('auto-save').setup {
-        execution_message = {
-          message = function() -- message to print on save
-            return 'Auto saved'
-          end,
-          dim = 0.18, -- dim the color of `message`
-          cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
-        },
-        trigger_events = { 'InsertLeave', 'TextChanged' },
-        enabled = true, -- Start enabled
-        debounce_delay = 2000, -- 2-second delay (2000ms)
-      }
-    end,
-  },
-  {
     'frabjous/knap', -- plugin repo
     keys = {
       {
@@ -1056,7 +1055,33 @@ require('lazy').setup({
       })
     end,
   },
+  {
+    '3rd/image.nvim',
+    config = function()
+      require('image').setup()
+    end,
+  },
+  -- SQLite Database Explorer
+  {
+    'tpope/vim-dadbod',
+    dependencies = {
+      'kristijanhusak/vim-dadbod-ui',
+      'kristijanhusak/vim-dadbod-completion',
+    },
+    cmd = { 'DBUI', 'DBUIToggle', 'DBUIAddConnection', 'DBUIFindBuffer' },
+    keys = {
+      { '<leader>db', '<cmd>DBUIToggle<CR>', desc = 'Toggle Database UI' },
+    },
+    config = function()
+      vim.g.db_ui_use_nerd_fonts = 1 -- Use icons for UI
+    end,
+  },
 
+  -- CSV File Explorer
+  {
+    'chrisbra/csv.vim',
+    ft = { 'csv' }, -- Load only for CSV files
+  },
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
