@@ -781,9 +781,9 @@ require('lazy').setup({
       vim.g.vimtex_quickfix_mode = 0 -- Disable quickfix auto-popup
       vim.g.vimtex_indent_enabled = 1 -- Enable smart indentation
       vim.g.vimtex_format_enabled = 1 -- Autoformat LaTeX
-      vim.g.vimtex_view_automatic = 0
       vim.g.vimtex_compiler_enabled = 1
       vim.g.vimtex_compiler_method = 'latexmk'
+      vim.g.vimtex_view_method = 'sioyek'
     end,
   },
 
@@ -985,75 +985,6 @@ require('lazy').setup({
   },
   {
     'ryanoasis/vim-devicons',
-  },
-  {
-    'frabjous/knap', -- plugin repo
-    keys = {
-      {
-        '<F5>',
-        function()
-          require('knap').process_once()
-        end,
-        mode = { 'n', 'v', 'i' },
-        desc = 'Process document once',
-      },
-      {
-        '<F6>',
-        function()
-          require('knap').close_viewer()
-        end,
-        mode = { 'n', 'v', 'i' },
-        desc = 'Close viewer and reset settings',
-      },
-      {
-        '<F7>',
-        function()
-          require('knap').toggle_autopreviewing()
-        end,
-        mode = { 'n', 'v', 'i' },
-        desc = 'Toggle auto-preview',
-      },
-      {
-        '<F8>',
-        function()
-          require('knap').forward_jump()
-        end,
-        mode = { 'n', 'v', 'i' },
-        desc = 'Forward jump (SyncTeX)',
-      },
-    },
-    config = function()
-      -- Global settings for knap; adjust commands and options as desired.
-      local gknapsettings = {
-        texoutputext = 'pdf',
-        textopdf = 'pdflatex -synctex=1 -halt-on-error -interaction=batchmode %docroot%',
-        textopdfviewerlaunch = 'sioyek %outputfile%',
-        textopdfviewerrefresh = 'kill -HUP %pid%',
-        delay = 250,
-      }
-      vim.g.knap_settings = gknapsettings
-
-      -- Enable auto-preview by default
-      vim.g.knap_autopreview = 1
-
-      -- Toggle auto-previewing once on entering a TeX buffer, after a delay (1000ms)
-      vim.api.nvim_create_autocmd('BufEnter', {
-        pattern = '*.tex',
-        callback = function()
-          vim.defer_fn(function()
-            require('knap').toggle_autopreviewing()
-          end, 1000)
-        end,
-        once = true,
-      })
-
-      -- Close the preview when quitting Neovim (e.g., with :wq)
-      vim.api.nvim_create_autocmd('VimLeavePre', {
-        callback = function()
-          require('knap').close_viewer()
-        end,
-      })
-    end,
   },
   {
     '3rd/image.nvim',
