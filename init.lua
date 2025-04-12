@@ -15,6 +15,8 @@ vim.opt.number = true
 -- vim.opt.relativenumber = true
 -- Key mappings for normal mode
 
+vim.opt.showbreak = '↪ ' -- for init.lua
+
 -- Set clipboard option
 vim.opt.clipboard = 'unnamedplus'
 -- Enable mouse mode, can be useful for resizing splits for example!
@@ -31,8 +33,15 @@ vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
 
+-- Make <CR> (Enter) move down by *visual* line, not actual line
+vim.keymap.set('n', '<CR>', 'gj', { noremap = true, silent = true })
+
+-- If you want Shift+Enter to go up a visual line
+vim.keymap.set('n', '<S-CR>', 'gk', { noremap = true, silent = true })
 -- Enable break indent
 vim.opt.breakindent = true
+
+vim.opt.showbreak = '↪ ' -- for init.lua
 
 -- Save undo history
 vim.opt.undofile = true
@@ -59,6 +68,9 @@ vim.opt.splitbelow = true
 --  and `:help 'listchars'`
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+
+vim.opt.wrap = true -- enable wrapping
+vim.opt.linebreak = true -- wrap only at word boundaries
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
@@ -940,15 +952,15 @@ require('lazy').setup({
   {
     'CRAG666/code_runner.nvim',
     dependencies = {
-      'CRAG666/betterTerm.nvim', -- Optional: For toggle runner mode
-      'preservim/vimux', -- Optional: For tmux integration
+      'CRAG666/betterTerm.nvim', -- Opcional: Para el modo toggle runner
+      'preservim/vimux', -- Opcional: Para la integración con tmux
     },
     config = function()
       require('code_runner').setup {
-        mode = 'float', -- Change mode as preferred: "tab", "toggleterm", etc.
-        focus = true, -- Focus runner window after launching
-        startinsert = true, -- Start runner in insert mode if supported
-        filetype = {
+        mode = 'float', -- Modo de ejecución: "tab", "toggleterm", etc.
+        focus = true, -- Enfocar la ventana del runner después de ejecutarlo
+        startinsert = true, -- Iniciar en modo insert si es compatible
+        filetype = setmetatable({
           python = function()
             local cwd = vim.fn.getcwd()
             local venvs = { 'venv', '.venv', 'env' }
@@ -973,7 +985,13 @@ require('lazy').setup({
           sh = 'sh',
           php = 'php',
           ruby = 'ruby',
-        },
+        }, {
+          __index = function(_, ext)
+            return function()
+              return vim.fn.expandcmd '$SHELL' .. ' ' .. vim.fn.expand '%:p'
+            end
+          end,
+        }),
         better_term = {
           clean = true,
           number = nil,
@@ -981,6 +999,15 @@ require('lazy').setup({
         },
         project = {},
       }
+
+      -- Mapeos de teclas
+      vim.keymap.set('n', '<leader>rr', ':RunCode<CR>', { noremap = true, silent = false })
+      vim.keymap.set('n', '<leader>rf', ':RunFile<CR>', { noremap = true, silent = false })
+      vim.keymap.set('n', '<leader>rft', ':RunFile tab<CR>', { noremap = true, silent = false })
+      vim.keymap.set('n', '<leader>rp', ':RunProject<CR>', { noremap = true, silent = false })
+      vim.keymap.set('n', '<leader>rc', ':RunClose<CR>', { noremap = true, silent = false })
+      vim.keymap.set('n', '<leader>crf', ':CRFiletype<CR>', { noremap = true, silent = false })
+      vim.keymap.set('n', '<leader>crp', ':CRProjects<CR>', { noremap = true, silent = false })
     end,
   },
   {
@@ -1012,6 +1039,27 @@ require('lazy').setup({
   {
     'chrisbra/csv.vim',
     ft = { 'csv' }, -- Load only for CSV files
+  },
+  {
+    'NeogitOrg/neogit',
+    dependencies = {
+      'nvim-lua/plenary.nvim', -- required
+      'sindrets/diffview.nvim', -- optional - Diff integration
+
+      -- Only one of these is needed.
+      'nvim-telescope/telescope.nvim', -- optional
+      'ibhagwan/fzf-lua', -- optional
+      'echasnovski/mini.pick', -- optional
+    },
+  },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
   },
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
