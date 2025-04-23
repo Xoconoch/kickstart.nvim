@@ -1062,6 +1062,19 @@ require('lazy').setup({
     ---@type render.md.UserConfig
     opts = {},
   },
+  -- Inside your Lazy plugin spec
+  {
+    "journal-cmd",
+    lazy = false,
+    config = function()
+      vim.api.nvim_create_user_command("Journal", function()
+        local date = os.date("%Y-%m-%d")
+        local path = "~/Nextcloud/Neovim/Diario/" .. date .. ".md"
+        vim.cmd("edit " .. vim.fn.expand(path))
+      end, {})
+    end
+  }
+
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
