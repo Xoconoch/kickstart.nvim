@@ -1048,17 +1048,15 @@ require('lazy').setup({
     ft = { 'csv' }, -- Load only for CSV files
   },
   {
-    'NeogitOrg/neogit',
+    "kdheepak/lazygit.nvim",
     dependencies = {
-      'nvim-lua/plenary.nvim', -- required
-      'sindrets/diffview.nvim', -- optional - Diff integration
-
-      -- Only one of these is needed.
-      'nvim-telescope/telescope.nvim', -- optional
-      'ibhagwan/fzf-lua', -- optional
-      'echasnovski/mini.pick', -- optional
+      "nvim-lua/plenary.nvim",
     },
-  },
+    cmd = { "LazyGit", "LazyGitConfig", "LazyGitCurrentFile", "LazyGitFilter" },
+    keys = {
+      { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+    }
+  }
   {
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
