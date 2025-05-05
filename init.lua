@@ -15,14 +15,36 @@ vim.opt.number = true
 -- vim.opt.relativenumber = true
 -- Key mappings for normal mode
 
-vim.api.nvim_create_user_command("Journal", function()
-  local date = os.date("%Y-%m-%d")
-  local path = "~/Nextcloud/Neovim/Diario/" .. date .. ".md"
-  vim.cmd("edit " .. vim.fn.expand(path))
+vim.api.nvim_create_user_command('Journal', function()
+  local date = os.date '%Y-%m-%d'
+  local path = '~/Nextcloud/Neovim/Diario/' .. date .. '.md'
+  vim.cmd('edit ' .. vim.fn.expand(path))
 end, {})
 
 vim.opt.showbreak = '↪ ' -- for init.lua
 
+vim.api.nvim_create_autocmd('BufReadPre', {
+  pattern = '*.tex',
+  callback = function(args)
+    -- This function attempts to find the main file in the same directory or above
+    local fname = vim.fn.expand(args.file)
+    local project_root = vim.fn.fnamemodify(fname, ':p:h')
+
+    -- You can customize this logic if you use a different main file naming scheme
+    local main_candidates = {
+      project_root .. '/main.tex',
+      project_root .. '/index.tex',
+      project_root .. '/' .. vim.fn.fnamemodify(fname, ':t'),
+    }
+
+    for _, path in ipairs(main_candidates) do
+      if vim.fn.filereadable(path) == 1 then
+        vim.b.vimtex_main = path
+        return
+      end
+    end
+  end,
+})
 -- Set clipboard option
 vim.opt.clipboard = 'unnamedplus'
 -- Enable mouse mode, can be useful for resizing splits for example!
@@ -681,7 +703,7 @@ require('lazy').setup({
       }
     end,
   },
-
+  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -700,7 +722,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'midnight'
+      vim.cmd.colorscheme 'catppuccin-mocha'
     end,
   },
   { 'dasupradyumna/midnight.nvim', lazy = false, priority = 1000 },
@@ -780,7 +802,7 @@ require('lazy').setup({
     init = function()
       -- VimTeX configuration goes here, e.g.
       vim.g.vimtex_compiler_latexmk = {
-        build_dir = '',
+        build_dir = 'build',
         callback = 1,
         continuous = 1, -- Ensures continuous compilation
         executable = 'latexmk',
@@ -802,7 +824,7 @@ require('lazy').setup({
       vim.g.vimtex_format_enabled = 1 -- Autoformat LaTeX
       vim.g.vimtex_compiler_enabled = 1
       vim.g.vimtex_compiler_method = 'latexmk'
-      vim.g.vimtex_view_method = 'sioyek'
+      vim.g.vimtex_view_method = 'zathura'
     end,
   },
 
@@ -1048,14 +1070,14 @@ require('lazy').setup({
     ft = { 'csv' }, -- Load only for CSV files
   },
   {
-    "kdheepak/lazygit.nvim",
+    'kdheepak/lazygit.nvim',
     dependencies = {
-      "nvim-lua/plenary.nvim",
+      'nvim-lua/plenary.nvim',
     },
-    cmd = { "LazyGit", "LazyGitConfig", "LazyGitCurrentFile", "LazyGitFilter" },
+    cmd = { 'LazyGit', 'LazyGitConfig', 'LazyGitCurrentFile', 'LazyGitFilter' },
     keys = {
-      { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
-    }
+      { '<leader>gg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
+    },
   },
   {
     'MeanderingProgrammer/render-markdown.nvim',
