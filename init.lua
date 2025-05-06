@@ -938,6 +938,9 @@ require('lazy').setup({
     'catgoose/nvim-colorizer.lua',
     event = 'BufReadPre',
     opts = { -- set to setup table
+      user_default_options = {
+        names = false,
+      },
     },
   },
   'mateuszwieloch/automkdir.nvim', -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
