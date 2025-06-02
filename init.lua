@@ -1045,12 +1045,17 @@ require('lazy').setup({
   {
     'ryanoasis/vim-devicons',
   },
-  {
-    '3rd/image.nvim',
-    config = function()
-      require('image').setup()
-    end,
-  },
+{
+  '3rd/image.nvim',
+  config = function()
+    require('image').setup({
+      rocks = {
+        enabled = false,
+      },
+    })
+  end,
+},
+
   -- SQLite Database Explorer
   {
     'tpope/vim-dadbod',
