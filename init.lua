@@ -1045,32 +1045,6 @@ require('lazy').setup({
   {
     'ryanoasis/vim-devicons',
   },
-{
-  '3rd/image.nvim',
-  config = function()
-    require('image').setup({
-      rocks = {
-        enabled = false,
-      },
-    })
-  end,
-},
-
-  -- SQLite Database Explorer
-  {
-    'tpope/vim-dadbod',
-    dependencies = {
-      'kristijanhusak/vim-dadbod-ui',
-      'kristijanhusak/vim-dadbod-completion',
-    },
-    cmd = { 'DBUI', 'DBUIToggle', 'DBUIAddConnection', 'DBUIFindBuffer' },
-    keys = {
-      { '<leader>db', '<cmd>DBUIToggle<CR>', desc = 'Toggle Database UI' },
-    },
-    config = function()
-      vim.g.db_ui_use_nerd_fonts = 1 -- Use icons for UI
-    end,
-  },
 
   -- CSV File Explorer
   {
